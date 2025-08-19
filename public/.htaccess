@@ -1,0 +1,15 @@
+<IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Se já for um arquivo ou diretório físico, serve direto
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tudo o resto vai para o front controller
+    RewriteRule ^ index.php [L]
+</IfModule>
