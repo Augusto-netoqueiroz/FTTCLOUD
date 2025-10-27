@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\InviteController;
+use App\Http\Controllers\TenantSettingsController;
  
 
 /*
@@ -78,4 +80,22 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Convites / inquilinos 
+|--------------------------------------------------------------------------
+*/
+
+
+Route::middleware(['auth', 'tenant'])->group(function () {
+    Route::get('/settings/tenant', [TenantSettingsController::class, 'edit'])->name('tenant.settings');
+    Route::post('/settings/tenant', [TenantSettingsController::class, 'update'])->name('tenant.settings.update');
+
+    Route::get('/invites', [InviteController::class, 'index'])->name('invites.index');
+    Route::post('/invites', [InviteController::class, 'store'])->name('invites.store');
+    Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])->name('invites.destroy');
+    Route::get('/invites/accept/{token}', [InviteController::class, 'accept'])->name('invites.accept');
 });
