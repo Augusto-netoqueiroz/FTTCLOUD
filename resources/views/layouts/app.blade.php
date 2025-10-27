@@ -5,87 +5,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FT Telecom - Dashboard</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com/3.4.14"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { 
-            inter: ['Inter', 'system-ui', 'sans-serif']
-          },
-          colors: {
-            primary: {
-              50: '#f8fafc',
-              100: '#f1f5f9',
-              200: '#e2e8f0',
-              300: '#cbd5e1',
-              400: '#94a3b8',
-              500: '#64748b',
-              600: '#475569',
-              700: '#334155',
-              800: '#1e293b',
-              900: '#0f172a'
-            },
-            accent: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b'
-            },
-            blue: {
-              500: '#3b82f6',
-              600: '#2563eb'
-            },
-            orange: {
-              500: '#f59e0b',
-              600: '#d97706'
-            }
-          },
-          animation: {
-            'fade-in': 'fadeIn 0.3s ease-out',
-            'slide-in': 'slideIn 0.3s ease-out',
-            'scale-in': 'scaleIn 0.2s ease-out',
-            'modal-in': 'modalIn 0.2s ease-out',
-          },
-          keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0', transform: 'translateY(8px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' }
-            },
-            slideIn: {
-              '0%': { transform: 'translateX(-100%)' },
-              '100%': { transform: 'translateX(0)' }
-            },
-            scaleIn: {
-              '0%': { transform: 'scale(0.95)', opacity: '0' },
-              '100%': { transform: 'scale(1)', opacity: '1' }
-            },
-            modalIn: {
-              '0%': { opacity: '0', transform: 'scale(0.95)' },
-              '100%': { opacity: '1', transform: 'scale(1)' }
-            }
-          }
-        }
-      }
-    }
-  </script>
+    @auth
+      <script>
+        window.__SIPCFG = @json($config ?? [], JSON_UNESCAPED_SLASHES);
+      </script>
+    @endauth
+
+  @vite(['resources/css/app.css','resources/js/app.js'])
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sip.js@0.11.6/dist/sip.min.js"></script>
+
+  
+    
 
   <!-- Theme Script -->
   <script>
@@ -106,41 +46,6 @@
       };
     })();
   </script>
-
-  <style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.3);
-      border-radius: 2px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.5);
-    }
-
-    /* Smooth transitions */
-    * {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Custom focus styles */
-    button:focus,
-    a:focus {
-      outline: 2px solid #10b981;
-      outline-offset: 2px;
-    }
-
-    /* Modal backdrop */
-    .modal-backdrop {
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-  </style>
 </head>
 
 <body class="h-full bg-primary-50 dark:bg-primary-900 text-primary-900 dark:text-primary-50 font-inter antialiased">
@@ -219,37 +124,36 @@
       </button>
     </div>
 
-   <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-  <div
-    x-data="{
-      menuItems: [
-        { id: 'dashboard', icon: 'layout-dashboard', label: 'Dashboard', href: @js(route('dashboard')), active: @js(request()->routeIs('dashboard')) },
-        { id: 'users',     icon: 'users',            label: 'Usuários',  href: @js(route('users.index')), active: @js(request()->routeIs('users.*')) },
-      ]
-    }"
-    x-init="$nextTick(() => lucide.createIcons())"
-    x-effect="lucide.createIcons()"
-  >
-    <template x-for="item in menuItems" :key="item.id">
-      <a
-        :href="item.href"
-        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-               hover:bg-primary-100 dark:hover:bg-primary-700"
-        :class="item.active
-          ? 'bg-accent-50 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400'
-          : 'text-primary-600 dark:text-primary-300'">
-        <i :data-lucide="item.icon" class="w-5 h-5 flex-shrink-0"></i>
-        <span x-show="!sidebarCollapsed" class="font-medium" x-text="item.label"></span>
-        <div x-show="item.active && !sidebarCollapsed" class="ml-auto w-2 h-2 bg-accent-500 rounded-full"></div>
-        <div x-show="sidebarCollapsed"
-             class="absolute left-full ml-2 px-3 py-2 bg-primary-900 dark:bg-primary-100 text-primary-50 dark:text-primary-900 
-                    text-sm rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
-             x-text="item.label"></div>
-      </a>
-    </template>
-  </div>
-</nav>
-
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <div
+        x-data="{
+          menuItems: [
+            { id: 'dashboard', icon: 'layout-dashboard', label: 'Dashboard', href: @js(route('dashboard')), active: @js(request()->routeIs('dashboard')) },
+            { id: 'users',     icon: 'users',            label: 'Usuários',  href: @js(route('users.index')), active: @js(request()->routeIs('users.*')) },
+          ]
+        }"
+        x-init="$nextTick(() => lucide.createIcons())"
+        x-effect="lucide.createIcons()"
+      >
+        <template x-for="item in menuItems" :key="item.id">
+          <a
+            :href="item.href"
+            class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                   hover:bg-primary-100 dark:hover:bg-primary-700"
+            :class="item.active
+              ? 'bg-accent-50 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400'
+              : 'text-primary-600 dark:text-primary-300'">
+            <i :data-lucide="item.icon" class="w-5 h-5 flex-shrink-0"></i>
+            <span x-show="!sidebarCollapsed" class="font-medium" x-text="item.label"></span>
+            <div x-show="item.active && !sidebarCollapsed" class="ml-auto w-2 h-2 bg-accent-500 rounded-full"></div>
+            <div x-show="sidebarCollapsed"
+                 class="absolute left-full ml-2 px-3 py-2 bg-primary-900 dark:bg-primary-100 text-primary-50 dark:text-primary-900 
+                        text-sm rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                 x-text="item.label"></div>
+          </a>
+        </template>
+      </div>
+    </nav>
 
     <!-- User Profile -->
     <div class="p-3 border-t border-primary-200 dark:border-primary-700">
@@ -285,16 +189,32 @@
       </div>
 
       <!-- Header Actions -->
-        <div class="ml-auto flex items-center gap-3">
+      <div class="ml-auto flex items-center gap-3">
 
-          {{-- Softphone WebRTC global na Topbar --}}
-          <x-webrtc-phone />
+      {{-- Softphone WebRTC (Vue) — container na navbar --}}
+                @auth
+            @php
+              /** @var \App\Services\SipConfigService $svc */
+              $svc = app(\App\Services\SipConfigService::class);
+              $sipCfg = $svc->forUser(auth()->user());
+            @endphp
 
-          <!-- Time -->
-          <div class="hidden sm:flex items-center gap-2 px-3 py-2 bg-primary-100 dark:bg-primary-700 rounded-lg">
-            <i data-lucide="clock" class="w-4 h-4 text-primary-500 dark:text-primary-400"></i>
-            <span class="text-sm font-medium text-primary-700 dark:text-primary-300" x-text="currentTime"></span>
-          </div>
+            {{-- container onde o Vue monta o softphone --}}
+            <div id="vue-phone"
+                data-config='@json($sipCfg, JSON_UNESCAPED_SLASHES)'
+                class="inline-flex"></div>
+          @endauth
+
+
+
+
+            
+
+        <!-- Time -->
+        <div class="hidden sm:flex items-center gap-2 px-3 py-2 bg-primary-100 dark:bg-primary-700 rounded-lg">
+          <i data-lucide="clock" class="w-4 h-4 text-primary-500 dark:text-primary-400"></i>
+          <span class="text-sm font-medium text-primary-700 dark:text-primary-300" x-text="currentTime"></span>
+        </div>
 
         <!-- Theme Toggle -->
         <button
@@ -441,6 +361,9 @@
 
     <!-- Page Content -->
     <main class="flex-1 p-6 overflow-y-auto">
+      {{-- Mount do Vue (exemplo) --}}
+      <div id="vue-app" class="mb-4"></div>
+
       @yield('content')
     </main>
   </div>
@@ -452,6 +375,3 @@
 
 </body>
 </html>
-
-
-
